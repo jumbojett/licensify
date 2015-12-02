@@ -109,7 +109,7 @@ class LicensifyCommand extends Command {
 				if (strpos($result, 'please view the LICENSE') !== false) {
 					$content = str_replace($result, "<?php\n\n" . trim($license) . "\n\n", $data);
 				} else {
-					$content = preg_replace('/<\?php/', "<?php\n\n" . trim($license) . "\n\n", $data);
+					$content = preg_replace('/<\?php/', "<?php\n\n" . trim($license) . "\n\n", $data, 1);
 				}
 			}
 
