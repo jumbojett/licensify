@@ -99,14 +99,18 @@ class LicensifyCommand extends Command {
 				$regex = '~(?P<group>^\s*<\?php(((/\*.*?\*/)|((//|#).*?\n{1})|(\s*))*))~s';
 				preg_match($regex, $data, $results);
 
-				// If this is not a license comment or there is no match
-				if (!isset($results['group']) || strpos($results['group'], 'please view the LICENSE') === false) {
+				if (!isset($results['group'])) {
 					continue;
 				}
 
 				$result = $results['group'];
 
-				$content = str_replace($result, "<?php\n\n" . trim($license) . "\n\n", $data);
+				// If this is not a license comment
+				if (strpos($result, 'please view the LICENSE') !== false) {
+					$content = str_replace($result, "<?php\n\n" . trim($license) . "\n\n", $data);
+				} else {
+					$content = preg_replace('/<\?php/', "<?php\n\n" . trim($license) . "\n\n", $data);
+				}
 			}
 
 			file_put_contents($file->getRealpath(), $content);
