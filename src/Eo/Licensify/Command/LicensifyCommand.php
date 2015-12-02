@@ -99,7 +99,8 @@ class LicensifyCommand extends Command {
 				$regex = '~(?P<group>^\s*<\?php(((/\*.*?\*/)|((//|#).*?\n{1})|(\s*))*))~s';
 				preg_match($regex, $data, $results);
 
-				if (!isset($results['group'])) {
+				// If this is not a license comment or there is no match
+				if (!isset($results['group']) || strpos($results['group'], 'please view the LICENSE') === false) {
 					continue;
 				}
 
