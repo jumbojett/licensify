@@ -1,9 +1,9 @@
 <?php
 
 /*
- * This file is part of the ACE (Analytics Collaboration Environment) package.
+ * This file is part of the forked package.
  *
- * (c) 2015 The MITRE Corporation
+ * (c) 2015 Michael Jett
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
