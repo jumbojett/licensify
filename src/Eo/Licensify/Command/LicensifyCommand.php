@@ -68,7 +68,7 @@ class LicensifyCommand extends Command {
 					continue;
 				}
 
-				if ((!$afterNamespace && !$afterClass)
+				if (!$afterClass
 					&& (T_COMMENT === $tokens[$i][0] && $this->isOldLicense($tokens[$i][1]))) {
 					continue;
 				}
