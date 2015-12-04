@@ -18,6 +18,15 @@
  * file that was distributed with this source code.
  */
 
+/*
+ * This file is part of the ACE (Analytics Collaboration Environment) package.
+ *
+ * (c) 2015 The MITRE Corporation
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Eo\Licensify\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -79,7 +88,6 @@ class LicensifyCommand extends Command {
 
 				if (($afterNamespace || $afterClass)
 					&& (T_COMMENT === $tokens[$i][0] && $this->isOldLicense($tokens[$i][1]))) {
-					print_r($tokens[$i]);
 					continue;
 				}
 
