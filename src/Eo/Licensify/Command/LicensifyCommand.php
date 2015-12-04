@@ -9,6 +9,15 @@
  * file that was distributed with this source code.
  */
 
+/*
+ * This file is part of the ACE (Analytics Collaboration Environment) package.
+ *
+ * (c) 2015 The MITRE Corporation
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Eo\Licensify\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -68,24 +77,15 @@ class LicensifyCommand extends Command {
 					continue;
 				}
 
-				if ($ignoreWhitespace && T_WHITESPACE === $tokens[$i][0]) {
-					continue;
-				}
-
-				$ignoreWhitespace = false;
-
-				if (!$afterNamespace && (T_COMMENT === $tokens[$i][0] || T_WHITESPACE === $tokens[$i][0])) {
+				if (($afterNamespace || $afterClass)
+					&& (T_COMMENT === $tokens[$i][0] && $this->isOldLicense($tokens[$i][1]))) {
+					print_r($tokens[$i]);
 					continue;
 				}
 
 				if (T_NAMESPACE === $tokens[$i][0]) {
 					$content .= "\n" . $license . "\n\n";
 					$afterNamespace = true;
-				}
-
-				if (!$afterClass && T_COMMENT === $tokens[$i][0]) {
-					$ignoreWhitespace = true;
-					continue;
 				}
 
 				if (T_CLASS === $tokens[$i][0]) {
@@ -106,7 +106,7 @@ class LicensifyCommand extends Command {
 				$result = $results['group'];
 
 				// If this is not a license comment
-				if (strpos($result, 'please view the LICENSE') !== false) {
+				if ($this->isOldLicense($result)) {
 					$content = str_replace($result, "<?php\n\n" . trim($license) . "\n\n", $data);
 				} else {
 					$content = preg_replace('/<\?php/', "<?php\n\n" . trim($license) . "\n\n", $data, 1);
@@ -143,5 +143,12 @@ class LicensifyCommand extends Command {
 		];
 
 		return implode(PHP_EOL, $text);
+	}
+
+	/**
+	 * @param $text
+	 */
+	protected function isOldLicense($text) {
+		return (strpos($text, 'please view the LICENSE') !== false);
 	}
 }
