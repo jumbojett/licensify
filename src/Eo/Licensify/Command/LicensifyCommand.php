@@ -60,7 +60,8 @@ class LicensifyCommand extends Command {
 			$tokens = token_get_all($data);
 
 			$content = '';
-			$afterNamespace = $afterClass = $ignoreWhitespace = false;
+
+			$need_license = true;
 
 			for ($i = 0, $c = count($tokens); $i < $c; ++$i) {
 				if (!is_array($tokens[$i])) {
@@ -68,39 +69,16 @@ class LicensifyCommand extends Command {
 					continue;
 				}
 
-				if (!$afterClass
-					&& (T_COMMENT === $tokens[$i][0] && $this->isOldLicense($tokens[$i][1]))) {
-					continue;
+				if (T_COMMENT === $tokens[$i][0] && $this->isOldLicense($tokens[$i][1])) {
+					$content .= $license;
+					$need_license = false;
+				} else {
+					$content .= $tokens[$i][1];
 				}
-
-				if (T_NAMESPACE === $tokens[$i][0]) {
-					$content .= "\n" . $license . "\n\n";
-					$afterNamespace = true;
-				}
-
-				if (T_CLASS === $tokens[$i][0]) {
-					$afterClass = true;
-				}
-
-				$content .= $tokens[$i][1];
 			}
 
-			if (false === $afterNamespace) {
-				$regex = '~(?P<group>^\s*<\?php(((/\*.*?\*/)|((//|#).*?\n{1})|(\s*))*))~s';
-				preg_match($regex, $data, $results);
-
-				if (!isset($results['group'])) {
-					continue;
-				}
-
-				$result = $results['group'];
-
-				// If this is not a license comment
-				if ($this->isOldLicense($result)) {
-					$content = str_replace($result, "<?php\n\n" . trim($license) . "\n\n", $data);
-				} else {
-					$content = preg_replace('/<\?php/', "<?php\n\n" . trim($license) . "\n\n", $data, 1);
-				}
+			if ($need_license) {
+				$content = preg_replace('/<\?php/', "<?php\n\n" . trim($license) . "\n\n", $data, 1);
 			}
 
 			file_put_contents($file->getRealpath(), $content);
