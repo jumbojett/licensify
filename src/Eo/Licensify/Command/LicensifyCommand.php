@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the forked package.
+ * This file is part of the forked  package.
  *
  * (c) 2015 Michael Jett
  *
@@ -69,7 +69,10 @@ class LicensifyCommand extends Command {
 					continue;
 				}
 
-				if (T_COMMENT === $tokens[$i][0] && $this->isOldLicense($tokens[$i][1])) {
+				if (T_DOC_COMMENT === $tokens[$i][0] && $this->isPHPStormLicense($tokens[$i][1])) {
+					// Delete Auto Generated PHPStorm comments
+					continue;
+				} else if (T_COMMENT === $tokens[$i][0] && $this->isOldLicense($tokens[$i][1])) {
 					$content .= $license;
 					$need_license = false;
 				} else {
@@ -118,5 +121,12 @@ class LicensifyCommand extends Command {
 	 */
 	protected function isOldLicense($text) {
 		return (strpos($text, 'please view the LICENSE') !== false);
+	}
+
+	/**
+	 * @param $text
+	 */
+	protected function isPHPStormLicense($text) {
+		return (strpos($text, 'Created by PhpStorm') !== false);
 	}
 }
